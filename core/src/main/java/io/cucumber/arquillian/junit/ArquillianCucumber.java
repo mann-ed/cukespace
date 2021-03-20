@@ -14,7 +14,7 @@ import org.junit.runners.model.InitializationError;
 import io.cucumber.junit.BaseCukeSpace;
 
 public class ArquillianCucumber extends Arquillian {
-    private static final String   RUN_CUCUMBER_MTD = "performInternalCucumberOperations";
+    private static final String   RUN_CUCUMBER_MTD = "getCukeTestClass";
 
     private List<FrameworkMethod> methods;
 
@@ -22,8 +22,12 @@ public class ArquillianCucumber extends Arquillian {
     private final BaseCukeSpace   delegate;
 
     public ArquillianCucumber(final Class<?> testClass) throws InitializationError {
+        this(testClass, new BaseCukeSpace(testClass));
+    }
+
+    public ArquillianCucumber(final Class<?> testClass, final BaseCukeSpace delegate) throws InitializationError {
         super(testClass);
-        this.delegate = new BaseCukeSpace(testClass);
+        this.delegate = delegate;
     }
 
     @Override

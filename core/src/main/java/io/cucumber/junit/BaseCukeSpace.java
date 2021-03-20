@@ -56,6 +56,7 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
     private final List<Feature>            features;
     private final Plugins                  plugins;
     private final CucumberExecutionContext context;
+    private final Class<?>                 clazz;
 
     private boolean                        multiThreadingAssumed = false;
 
@@ -65,6 +66,7 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
      */
     public BaseCukeSpace(final Class<?> clazz) throws InitializationError {
         super(clazz);
+        this.clazz = clazz;
         Assertions.assertNoCucumberAnnotatedMethods(clazz);
 
         // Parse the options early to provide fast feedback about invalid
@@ -126,12 +128,13 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
 
         this.children = features.stream().map(feature -> {
             final Integer uniqueSuffix = uniqueSuffix(groupedByName, feature, Feature::getName);
-
-            // return Request.runner(CukeRunners.create(feature, uniqueSuffix, filters,
-            // runnerSupplier, junitOptions));
             return CukeRunners.create(feature, uniqueSuffix, filters, runnerSupplier, junitOptions);
         }).filter(runner -> !runner.isEmpty()).collect(toList());
 
+    }
+
+    public Class<?> getCukeTestClass() {
+        return this.clazz;
     }
 
     /**
@@ -198,6 +201,5 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
                 context.finishTestRun();
             }
         }
-
     }
 }

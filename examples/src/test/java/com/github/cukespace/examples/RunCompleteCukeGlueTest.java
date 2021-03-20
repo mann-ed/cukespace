@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 import cucumber.runtime.arquillian.domain.Belly;
 import cucumber.runtime.arquillian.feature.en.glue.CukesInBellyTest;
 import io.cucumber.junit.CucumberOptions;
-import io.cucumber.junit.CukeConfig;
 import io.cucumber.junit.CukeSpace;
 
 /**
@@ -22,7 +21,6 @@ import io.cucumber.junit.CukeSpace;
  *         Created: Mar 17, 2021
  */
 @RunWith(CukeSpace.class)
-@CukeConfig
 //@Features("src/test/resources/cucumber/runtime/arquillian/feature") // folder on the file system
 /*
  * @Tags("@myTag")

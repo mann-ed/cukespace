@@ -137,7 +137,7 @@ public final class ArquillianObjectFactoryServiceLoader {
             final BeanManager          beanManager       = container.getBeanManager();
             final Set<Bean<?>>         beans             = beanManager.getBeans(type);
             final Bean<?>              bean              = beanManager.resolve(beans);
-            final CreationalContext<?> creationalContext = beanManager.createCreationalContext(null);
+            final CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
             try {
                 if (!instances.containsKey(type)) {
                     final T typesFound = type.cast(beanManager.getReference(bean, type, creationalContext));
