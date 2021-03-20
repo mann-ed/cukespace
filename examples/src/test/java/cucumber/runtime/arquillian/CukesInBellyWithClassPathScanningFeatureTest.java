@@ -1,36 +1,35 @@
 package cucumber.runtime.arquillian;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.runtime.arquillian.api.Features;
-import cucumber.runtime.arquillian.domain.Belly;
+import static org.jboss.shrinkwrap.api.ShrinkWrap.create;
+import static org.junit.Assert.assertEquals;
+
+import javax.inject.Inject;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import cucumber.runtime.arquillian.domain.Belly;
+import io.cucumber.arquillian.junit.ArquillianCucumber;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 
-import static org.jboss.shrinkwrap.api.ShrinkWrap.create;
-import static org.junit.Assert.assertEquals;
-
-@RunWith(ArquillianCucumber.class)
-@Features("classpath:features")
+//@RunWith(ArquillianCucumber.class)
+//@Features("classpath:features")
 public class CukesInBellyWithClassPathScanningFeatureTest {
     @Deployment
     public static Archive<?> createDeployment() {
-        return create(WebArchive.class)
-            .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-            .addClass(Belly.class);
+        return create(WebArchive.class).addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml").addClass(Belly.class);
     }
 
     @Inject
     private Belly belly;
 
     @When("^I eat (\\d+) cukes$")
-    public void eatCukes(int cukes) {
+    public void eatCukes(final int cukes) {
         belly.setCukes(cukes);
     }
 
@@ -40,7 +39,7 @@ public class CukesInBellyWithClassPathScanningFeatureTest {
     }
 
     @Then("^I should have (\\d+) cukes in my belly$")
-    public void shouldHaveThisMany(int cukes) {
+    public void shouldHaveThisMany(final int cukes) {
         assertEquals(cukes, belly.getCukes());
     }
 }

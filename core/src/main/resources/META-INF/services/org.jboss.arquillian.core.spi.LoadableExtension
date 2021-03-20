@@ -1,2 +1,2 @@
-cucumber.runtime.arquillian.client.CucumberClientExtension
-cucumber.runtime.arquillian.container.cdi.CDIExtension
+#com.github.cukespace.client.CucumberClientExtension
+#com.github.cukespace.container.CDIExtension

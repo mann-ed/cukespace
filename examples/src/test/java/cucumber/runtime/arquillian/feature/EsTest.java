@@ -1,9 +1,7 @@
 package cucumber.runtime.arquillian.feature;
 
-import cucumber.api.java.es.Cuando;
-import cucumber.api.java.es.Dado;
-import cucumber.api.java.es.Entonces;
-import cucumber.runtime.arquillian.ArquillianCucumber;
+import static org.junit.Assert.assertEquals;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -11,7 +9,10 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import io.cucumber.arquillian.junit.ArquillianCucumber;
+import io.cucumber.java.es.Cuando;
+import io.cucumber.java.es.Dado;
+import io.cucumber.java.es.Entonces;
 
 @RunWith(ArquillianCucumber.class)
 public class EsTest {

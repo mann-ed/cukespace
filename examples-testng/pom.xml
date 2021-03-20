@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.github.cukespace</groupId>
     <artifactId>cukespace-parent</artifactId>
-    <version>1.6.8-SNAPSHOT</version>
+    <version>6.10.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>cukespace-examples-testng</artifactId>
@@ -92,7 +92,7 @@
       </exclusions>
     </dependency>
     <dependency> <!-- not added by default cause of backward compatibility -->
-      <groupId>info.cukes</groupId>
+      <groupId>io.cucumber</groupId>
       <artifactId>cucumber-testng</artifactId>
       <scope>test</scope>
     </dependency>
