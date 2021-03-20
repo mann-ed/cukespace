@@ -12,10 +12,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 import cucumber.runtime.arquillian.domain.Belly;
-import io.cucumber.arquillian.junit.ArquillianCucumber;
 import io.cucumber.java.fr.Alors;
 import io.cucumber.java.fr.Etantdonné;
 import io.cucumber.java.fr.Quand;
+import io.cucumber.junit.ArquillianCucumber;
 
 @RunWith(ArquillianCucumber.class)
 public class CukesInBellyFrTest {

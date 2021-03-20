@@ -9,10 +9,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.runner.RunWith;
 
-import io.cucumber.arquillian.junit.ArquillianCucumber;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Quando;
+import io.cucumber.junit.ArquillianCucumber;
 import io.cucumber.junit.CucumberOptions;
 
 @RunWith(ArquillianCucumber.class)

@@ -9,10 +9,10 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
-import io.cucumber.arquillian.junit.ArquillianCucumber;
 import io.cucumber.java.es.Cuando;
 import io.cucumber.java.es.Dado;
 import io.cucumber.java.es.Entonces;
+import io.cucumber.junit.ArquillianCucumber;
 
 @RunWith(ArquillianCucumber.class)
 public class EsTest {

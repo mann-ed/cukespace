@@ -18,10 +18,10 @@ import org.junit.runner.RunWith;
 import com.github.cukespace.examples.Greeter;
 
 import cucumber.runtime.arquillian.domain.Belly;
-import io.cucumber.arquillian.junit.ArquillianCucumber;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.junit.ArquillianCucumber;
 
 //@Features("cucumber/runtime/arquillian/feature/cukes-in-belly.feature:9") // only second scenario
 @RunWith(ArquillianCucumber.class)

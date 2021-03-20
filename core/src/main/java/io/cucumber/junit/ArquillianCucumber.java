@@ -1,39 +1,36 @@
-package io.cucumber.arquillian.junit;
+package io.cucumber.junit;
 
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.junit.Arquillian;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.ParentRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 
-import io.cucumber.junit.BaseCukeSpace;
-
 public class ArquillianCucumber extends Arquillian {
+
     private static final String   RUN_CUCUMBER_MTD = "getCukeTestClass";
 
     private List<FrameworkMethod> methods;
 
-    @Inject
-    private final BaseCukeSpace   delegate;
+    private BaseCukeSpace         delegate;
 
     public ArquillianCucumber(final Class<?> testClass) throws InitializationError {
-        this(testClass, new BaseCukeSpace(testClass));
-    }
-
-    public ArquillianCucumber(final Class<?> testClass, final BaseCukeSpace delegate) throws InitializationError {
         super(testClass);
-        this.delegate = delegate;
     }
 
     @Override
     protected Description describeChild(final FrameworkMethod method) {
         if (!Boolean.getBoolean("cukespace.runner.standard-describe")
                 && InstanceControlledFrameworkMethod.class.isInstance(method)) {
+            final InstanceControlledFrameworkMethod cukeMethod = InstanceControlledFrameworkMethod.class.cast(method);
+            if (null != cukeMethod.getRunner()) {
+                return cukeMethod.getRunner().getDescription();
+            }
             return Description.createTestDescription(
                     InstanceControlledFrameworkMethod.class.cast(method).getOriginalClass(),
                     ArquillianCucumber.RUN_CUCUMBER_MTD, method.getAnnotations());
@@ -48,38 +45,42 @@ public class ArquillianCucumber extends Arquillian {
         }
 
         methods = new LinkedList<>();
-
-        // run @Test methods
-        for (final FrameworkMethod each : ArquillianCucumber.super.computeTestMethods()) {
-            methods.add(each);
-        }
-        // hello ed
-        methods.addAll(getChildren());
-        try { // run cucumber, this looks like a hack but that's to keep @Before/@After/...
-              // hooks behavior
-            final Method runCucumber = BaseCukeSpace.class.getDeclaredMethod(RUN_CUCUMBER_MTD, Object.class,
-                    Object.class);
-            methods.add(new InstanceControlledFrameworkMethod(this, getTestClass().getJavaClass(), runCucumber));
-        } catch (final NoSuchMethodException e) {
+        try {
+            this.delegate = new BaseCukeSpace(this.getTestClass().getJavaClass());
+        } catch (final InitializationError e1) {
             // no-op: will not accur...if so this exception is not your biggest issue
         }
 
+        // run @Test methods
+        for (final FrameworkMethod each : ArquillianCucumber.super.computeTestMethods()) {
+            // methods.add(each);
+        }
+        // hello ed
+
+        methods.addAll(getChildren());
+        try { // run cucumber, this looks like a hack but that's to keep @Before/@After/...
+              // hooks behavior
+            final Method runCucumber = BaseCukeSpace.class.getDeclaredMethod(RUN_CUCUMBER_MTD);
+            this.delegate.getChildren().forEach(child -> methods.add(
+                    new InstanceControlledFrameworkMethod(this, this.delegate.getCukeTestClass(), runCucumber, child)));
+            // methods.add(new InstanceControlledFrameworkMethod(this,
+            // this.delegate.getCukeTestClass(), runCucumber));
+        } catch (final NoSuchMethodException e) {
+            System.out.println("It did occur, and we do have issues");
+            // no-op: will not accur...if so this exception is not your biggest issue
+        }
         return methods;
     }
 
     @Override
     protected void runChild(final FrameworkMethod method, final RunNotifier notifier) {
-        if (InstanceControlledFrameworkMethod.class.isInstance(method)) {
-            InstanceControlledFrameworkMethod.class.cast(method).setNotifier(notifier);
-        }
-        // super.runChild(method, notifier);
         this.delegate.run(notifier);
     }
 
     public static class InstanceControlledFrameworkMethod extends FrameworkMethod {
         private final ArquillianCucumber instance;
         private final Class<?>           originalClass;
-        private RunNotifier              notifier;
+        private ParentRunner<?>          child;
 
         private InstanceControlledFrameworkMethod(final ArquillianCucumber runner, final Class<?> originalClass,
                 final Method runCucumber) {
@@ -88,12 +89,16 @@ public class ArquillianCucumber extends Arquillian {
             this.instance = runner;
         }
 
+        private InstanceControlledFrameworkMethod(final ArquillianCucumber runner, final Class<?> originalClass,
+                final Method runCucumber, final ParentRunner<?> child) {
+            super(runCucumber);
+            this.originalClass = originalClass;
+            this.instance = runner;
+            this.child = child;
+        }
+
         @Override
         public Object invokeExplosively(final Object target, final Object... params) throws Throwable {
-            /*
-             * instance.delegate.performInternalCucumberOperations(target, notifier == null
-             * ? new RunNotifier() : notifier);
-             */
             return null;
         }
 
@@ -101,8 +106,15 @@ public class ArquillianCucumber extends Arquillian {
             return originalClass;
         }
 
-        public void setNotifier(final RunNotifier notifier) {
-            this.notifier = notifier;
+        public ParentRunner<?> getRunner() {
+            return this.child;
+        }
+
+        /**
+         * @return the instance
+         */
+        public ArquillianCucumber getInstance() {
+            return instance;
         }
     }
 }

@@ -12,10 +12,10 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.runner.RunWith;
 
 import cucumber.runtime.arquillian.domain.Belly;
-import io.cucumber.arquillian.junit.ArquillianCucumber;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.junit.ArquillianCucumber;
 
 //@RunWith(ArquillianCucumber.class)
 //@Features("classpath:features")
