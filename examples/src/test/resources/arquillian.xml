@@ -17,10 +17,10 @@
   </extension>
 
   <extension qualifier="webdriver">
-    <property name="browser">phantomjs</property>
+    <property name="browser">firefox</property>
   </extension>
     
-    <container qualifier="tomee" default="true">
+    <container qualifier="tomee" default="false">
     <configuration>
         <property name="httpPort">-1</property>
         <property name="stopPort">-1</property>
@@ -28,6 +28,7 @@
         <property name="properties">
             aproperty=something
         </property>
+        <property name="appWorkingDir">target/working-dir</property>
         <!--Optional Remote Adapter Deployer Properties
         <property name="deployerProperties">
             aproperty=something
@@ -35,5 +36,12 @@
         -->
     </configuration>
 </container>
-
+<container qualifier="thorntail">
+        <!-- If you want to use the JBOSS_HOME environment variable, just delete the jbossHome property -->
+        <configuration>
+            <property name="host">localhost</property>
+            <property name="port">${thorntail.arquillian.daemon.port:12345}</property>
+       <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</property> 
+        </configuration>
+    </container>
 </arquillian>

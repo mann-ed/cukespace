@@ -17,15 +17,9 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jcdi_1.1_spec</artifactId>
-			<version>1.0</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-atinject_1.0_spec</artifactId>
-			<version>1.0</version>
+			<groupId>javax</groupId>
+			<artifactId>javaee-api</artifactId>
+			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -59,10 +53,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-    <groupId>org.jboss.arquillian.testenricher</groupId>
-    <artifactId>arquillian-testenricher-cdi</artifactId>
-    <version>1.6.0.Final</version>
-</dependency>
+			<groupId>org.jboss.arquillian.testenricher</groupId>
+			<artifactId>arquillian-testenricher-cdi</artifactId>
+			<version>1.6.0.Final</version>
+		</dependency>
 		<dependency>
 			<groupId>org.jboss.arquillian.extension</groupId>
 			<artifactId>arquillian-persistence-core</artifactId>

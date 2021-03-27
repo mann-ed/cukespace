@@ -40,6 +40,7 @@ public class ArquillianCucumber extends Arquillian {
 
     @Override
     protected List<FrameworkMethod> computeTestMethods() {
+
         if (methods != null) {
             return methods;
         }

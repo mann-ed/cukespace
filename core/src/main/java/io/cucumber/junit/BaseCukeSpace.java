@@ -15,12 +15,15 @@ import java.util.function.Supplier;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
 
+import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.junit.runner.Description;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.model.Statement;
+
+import com.github.cukespace.container.CukeSpaceCDIObjectFactory;
 
 import io.cucumber.core.eventbus.EventBus;
 import io.cucumber.core.feature.FeatureParser;
@@ -59,6 +62,8 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
     private final Class<?>                 clazz;
 
     private boolean                        multiThreadingAssumed = false;
+
+    CukeSpaceCDIObjectFactory              objectFactory         = new CukeSpaceCDIObjectFactory();
 
     /**
      * @param testClass
@@ -141,7 +146,7 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
      * @return the beanManagerInst
      */
     public BeanManager getBeanManager() {
-        return CDI.current().getBeanManager();
+        return CDIExtension.getBeanManager();
     }
 
     protected ClassLoader getCukeSpaceClassLoader() {

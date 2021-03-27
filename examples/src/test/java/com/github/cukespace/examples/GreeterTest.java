@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
 import java.net.URL;
 
 import javax.inject.Inject;
@@ -31,7 +32,8 @@ public class GreeterTest {
     @Deployment
     public static WebArchive createDeployment() {
         final WebArchive jar = ShrinkWrap.create(WebArchive.class).addClass(Greeter.class)
-                .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
+                .addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"))
+                .addAsWebResource(new File("src/main/webapp/index.html"));
         System.out.println(jar.toString(true));
         return jar;
     }

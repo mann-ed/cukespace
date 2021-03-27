@@ -1,0 +1,3 @@
+com.github.cukespace.client.CucumberClientExtension
+com.github.cukespace.container.cdi.CDIExtension
+#com.github.cukespace.CukeSpaceContainerTestExtension
