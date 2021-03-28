@@ -13,7 +13,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.CDI;
 
 import org.jboss.arquillian.testenricher.cdi.container.CDIExtension;
 import org.junit.runner.Description;
@@ -150,7 +149,7 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
     }
 
     protected ClassLoader getCukeSpaceClassLoader() {
-        return CDI.current().getBeanManager().getClass().getClassLoader();
+        return clazz.getClassLoader();
     }
 
     @Override
@@ -165,7 +164,6 @@ public class BaseCukeSpace extends ParentRunner<ParentRunner<?>> {
 
     @Override
     protected void runChild(final ParentRunner<?> child, final RunNotifier notifier) {
-
         child.run(notifier);
     }
 

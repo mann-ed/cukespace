@@ -1,7 +1,8 @@
-package com.github.cukespace.client;
+package io.cucumber.java;
 
 import static com.github.cukespace.locator.JarLocation.jarLocation;
 import static com.github.cukespace.shared.ClassLoaders.load;
+import static java.util.Arrays.asList;
 import static org.jboss.shrinkwrap.api.ShrinkWrap.create;
 
 import java.io.File;
@@ -24,11 +25,13 @@ import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.container.LibraryContainer;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.impl.base.asset.AssetUtil;
 import org.jboss.shrinkwrap.impl.base.filter.IncludeRegExpPaths;
 
 import com.github.cukespace.CukeSpace;
 import com.github.cukespace.config.CucumberConfiguration;
 import com.github.cukespace.container.ContextualObjectFactoryBase;
+import com.github.cukespace.core.StepEnricherProvider;
 import com.github.cukespace.lifecycle.CucumberLifecycle;
 import com.github.cukespace.shared.ClientServerFiles;
 import com.sun.jdi.event.StepEvent;
@@ -92,15 +95,17 @@ public class CucumberArchiveProcessor implements ApplicationArchiveProcessor {
                 testClass.getJavaClass());
 
         // glues
-        enrichWithGlues(javaClass, entryPointContainer, ln);
+        // enrichWithGlues(javaClass, entryPointContainer, ln);
 
         // cucumber-arquillian
-        enrichWithCukeSpace(entryPointContainer, junit);
+        // enrichWithCukeSpace(entryPointContainer, junit);
 
         // if scala module is available at classpath
-        final Set<ArchivePath> libs = applicationArchive.getContent(new IncludeRegExpPaths("/WEB-INF/lib/.*jar"))
-                .keySet();
+        final Set<ArchivePath>    libs                = applicationArchive
+                .getContent(new IncludeRegExpPaths("/WEB-INF/lib/.*jar")).keySet();
         tryToAdd(libs, libraryContainer, "WEB-INF/lib/scala-library-", "cucumber.api.scala.ScalaDsl", "scala.App");
+
+        System.out.println(applicationArchive.toString(true));
     }
 
     protected final Archive<? extends Archive<?>> findArchiveByTestClass(final Archive<?> topArchive,
@@ -145,8 +150,7 @@ public class CucumberArchiveProcessor implements ApplicationArchiveProcessor {
             config.append(CucumberConfiguration.OPTIONS).append("=").append(cucumberConfiguration.getOptions());
         }
 
-        // resourceJar.addAsResource(new StringAsset(config.toString()),
-        // ClientServerFiles.CONFIG);
+        resourceJar.addAsResource(new StringAsset(config.toString()), ClientServerFiles.CONFIG);
     }
 
     private static void addCucumberAnnotations(final String ln, final JavaArchive resourceJar) {
@@ -165,39 +169,53 @@ public class CucumberArchiveProcessor implements ApplicationArchiveProcessor {
     }
 
     private static void enrichWithDefaultCucumber(final LibraryContainer<?> libraryContainer) {
-        System.out.println("enrichWithDefaultCucumber");
-        /*
-         * libraryContainer.addAsLibraries(jarLocation(Mapper.class),
-         * jarLocation(ResourceLoaderClassFinder.class),
-         * jarLocation(ConverterRegistry.class), jarLocation(JavaBackend.class)); for
-         * (final String potential : asList("cucumber.api.junit.Cucumber",
-         * "cucumber.api.testng.TestNGCucumberRunner",
-         * "cucumber.runtime.java8.LambdaGlueBase")) { try {
-         * libraryContainer.addAsLibraries(
-         * jarLocation(Thread.currentThread().getContextClassLoader().loadClass(
-         * potential))); } catch (final Throwable e) { // no-op } }
-         */
+        libraryContainer.addAsLibraries(jarLocation(io.cucumber.core.runtime.BackendServiceLoader.class),
+                jarLocation(JavaBackend.class));
+
+        for (final String potential : asList("io.cucumber.junit.Cucumber", "io.cucumber.testng.TestNGCucumberRunner",
+                "io.cucumber.java8.LambdaGlue")) {
+            try {
+                libraryContainer.addAsLibraries(
+                        jarLocation(Thread.currentThread().getContextClassLoader().loadClass(potential)));
+            } catch (final Throwable e) {
+                // no-op
+            }
+        }
     }
 
     private static void enrichWithGlues(final Class<?> javaClass, final LibraryContainer<?> libraryContainer,
             final String ln) {
-        System.out.println("enrichWithGlues");
-        /*
-         * final Collection<Class<?>> glues = Glues.findGlues(javaClass); final
-         * StringBuilder gluesStr = new StringBuilder(); if (!glues.isEmpty()) { final
-         * JavaArchive gluesJar = create(JavaArchive.class, "cukespace-glues.jar"); { //
-         * glues txt file for (final Class<?> g : glues) {
-         * gluesStr.append(g.getName()).append(ln); } gluesJar.add(new
-         * StringAsset(gluesStr.toString()), ClientServerFiles.GLUES_LIST); }
-         *
-         * { // classes gluesJar.addClasses(glues.toArray(new Class<?>[glues.size()]));
-         * for (final Class<?> clazz : glues) { Class<?> current =
-         * clazz.getSuperclass(); while (!Object.class.equals(current)) { if
-         * (!gluesJar.contains(AssetUtil.getFullPathForClassResource(current))) {
-         * gluesJar.addClass(current); } current = current.getSuperclass(); } } }
-         *
-         * libraryContainer.addAsLibrary(gluesJar); }
-         */
+        final Collection<Class<?>> glues    = Glues.findGlues(javaClass);
+        final StringBuilder        gluesStr = new StringBuilder();
+        if (!glues.isEmpty()) {
+            final JavaArchive gluesJar = create(JavaArchive.class, "cukespace-glues.jar");
+
+            { // glues txt file
+                for (final Class<?> g : glues) {
+                    gluesStr.append(g.getName()).append(ln);
+                    gluesJar.addClass(g);
+                }
+                gluesJar.add(new StringAsset(gluesStr.toString()), ClientServerFiles.GLUES_LIST);
+            }
+
+            { // classes
+
+                gluesJar.addClasses(glues.toArray(new Class<?>[glues.size()]));
+                for (final Class<?> clazz : glues) {
+                    Class<?> current = clazz.getSuperclass();
+                    while (!Object.class.equals(current)) {
+                        if (!gluesJar.contains(AssetUtil.getFullPathForClassResource(current))) {
+                            gluesJar.addClass(current);
+                        }
+                        current = current.getSuperclass();
+                    }
+                }
+            }
+            System.out.println("----------------------THIS IS THE GLUES JAR-------------------");
+            gluesJar.toString(true);
+            System.out.println("----------------------END OF THE GLUES JAR-------------------");
+            libraryContainer.addAsLibrary(gluesJar);
+        }
     }
 
     private static void enrichWithCukeSpace(final LibraryContainer<?> libraryContainer, final boolean junit) {
@@ -206,7 +224,8 @@ public class CucumberArchiveProcessor implements ApplicationArchiveProcessor {
                 // .addPackage(cucumber.runtime.arquillian.api.Glues.class.getPackage())
                 .addPackage(StepEvent.class.getPackage()).addClasses(CucumberLifecycle.class, BaseCukeSpace.class)
                 .addClasses(CucumberConfiguration.class, ArquillianCucumber.class, CukeSpace.class,
-                        ContextualObjectFactoryBase.class);
+                        ContextualObjectFactoryBase.class)
+                .addClass(StepEnricherProvider.class);
         // .addPackage(ClientServerFiles.class.getPackage());
 
         if (junit) {

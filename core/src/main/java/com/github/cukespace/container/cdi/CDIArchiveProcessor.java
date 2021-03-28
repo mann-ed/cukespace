@@ -13,9 +13,10 @@ import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 
-import com.github.cukespace.client.CucumberArchiveProcessor;
 import com.github.cukespace.config.CucumberConfiguration;
 import com.github.cukespace.container.CukeSpaceCDIObjectFactory;
+
+import io.cucumber.java.CucumberArchiveProcessor;
 
 public class CDIArchiveProcessor extends CucumberArchiveProcessor {
 

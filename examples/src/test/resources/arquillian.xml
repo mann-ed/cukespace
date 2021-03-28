@@ -14,6 +14,7 @@
     <property name="generateDocs">true</property>
     <property name="report-directory">target/cucumber-report</property>
     <property name="persistenceEventsActivated">true</property>
+    <property name="objectFactory">cdi</property>
   </extension>
 
   <extension qualifier="webdriver">
@@ -42,6 +43,11 @@
             <property name="host">localhost</property>
             <property name="port">${thorntail.arquillian.daemon.port:12345}</property>
        <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=8787,server=y,suspend=n</property> 
+        </configuration>
+    </container>
+     <container qualifier="widlfly-managed" default="true">
+        <configuration>
+            <property name="jbossHome">${jbossHome:target/wildfly-23.0.0.Final}</property>
         </configuration>
     </container>
 </arquillian>

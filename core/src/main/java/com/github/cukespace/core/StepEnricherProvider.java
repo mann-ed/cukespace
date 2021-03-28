@@ -5,12 +5,12 @@ import java.util.Collection;
 import javax.enterprise.inject.spi.BeanManager;
 
 import org.jboss.arquillian.container.spi.event.DeployDeployment;
-import org.jboss.arquillian.container.test.impl.client.deployment.DeploymentGenerator;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.EventContext;
 import org.jboss.arquillian.core.spi.ServiceLoader;
+import org.jboss.arquillian.junit.event.RulesEnrichment;
 import org.jboss.arquillian.test.spi.TestClass;
 import org.jboss.arquillian.test.spi.TestEnricher;
 import org.jboss.arquillian.test.spi.event.suite.Before;
@@ -40,6 +40,11 @@ public class StepEnricherProvider {
     public void enrich(@Observes final Before event) throws Exception {
         final Collection<TestEnricher> testEnrichers = serviceLoader.get().all(TestEnricher.class);
         enrichers.set(testEnrichers);
+    }
+
+    public void enrichRulesAndTestInstance(@Observes final RulesEnrichment event) throws Exception {
+        final Object testInstance = event.getTestInstance();
+
     }
 
     public void callback(@Observes(precedence = -1) final EventContext<DeployDeployment> eventContext,
